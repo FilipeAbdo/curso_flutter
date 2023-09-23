@@ -1,9 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:projeto_perguntas/questao.dart';
 import 'package:projeto_perguntas/questionario.dart';
-import 'package:projeto_perguntas/resposta.dart';
 import 'package:projeto_perguntas/resultado.dart';
 
 main() => runApp(const PerguntaApp());
@@ -14,18 +12,30 @@ class _PerguntaAppState extends State<PerguntaApp> {
   final _perguntas = const [
     {
       "texto": "Qual é a sua cor favorita?",
-      "resposta": ['Preto', 'Branco', 'Azul', 'Verde'],
-      "pontuação": [0.0, 0.0, 0.0, 1.0]
+      "resposta": [
+        {"texto": 'Preto', "nota": 0},
+        {"texto": 'Branco', "nota": 0},
+        {"texto": 'Azul', "nota": 0},
+        {"texto": 'Verde', "nota": 1},
+      ],
     },
     {
       "texto": "Qual é a sua linguagem favorita?",
-      "resposta": ['C/C++', 'Java', 'JavaScript', 'C#', 'Dart', 'Python'],
-      "pontuação": [10, 0, 3.0, 4.0, 0.5, -15]
+      "resposta": [
+        {"texto": 'C/C++', "nota": 10},
+        {"texto": 'Java', "nota": 0},
+        {"texto": 'JavaScript', "nota": 3},
+        {"texto": 'C#', "nota": 4},
+        {"texto": 'Dart', "nota": 5},
+        {"texto": 'Python', "nota": -15},
+      ],
     },
     {
       "texto": "Porque a apple é tão seletiva?",
-      "resposta": ['Mercenária', 'É Top'],
-      "pontuação": [1000, -10000]
+      "resposta": [
+        {"texto": 'Mercenária', "nota": 1000},
+        {"texto": 'É Top', "nota": -10000},
+      ],
     },
   ];
 
@@ -33,19 +43,20 @@ class _PerguntaAppState extends State<PerguntaApp> {
     return _perguntaSelecionada < _perguntas.length;
   }
 
-  void _resposta(int i) {
-    log("Resposta $i");
+  void _recomecar() {
     setState(() {
-      if (i >= 0) {
-        _nota +=
-            ((_perguntas[_perguntaSelecionada]["pontuação"] as List<num>)[i]
-                .toDouble());
-        _perguntaSelecionada++;
-      } else {
-        _nota = 0;
-        _perguntaSelecionada = 0;
-      }
+      _nota = 0;
+      _perguntaSelecionada = 0;
     });
+  }
+
+  void _resposta(double nota) {
+    if (temPergunta) {
+      setState(() {
+        _nota += nota;
+        _perguntaSelecionada++;
+      });
+    }
     log("Pergunta selecionada $_perguntaSelecionada");
   }
 
@@ -60,8 +71,14 @@ class _PerguntaAppState extends State<PerguntaApp> {
             title: const Text("Quiz da revolta"),
           ),
           body: (temPergunta
-              ? Questionario(pergunta, _resposta)
-              : Resultado(_nota, _resposta))),
+              ? Questionario(
+                  pergunta: pergunta,
+                  resposta: _resposta,
+                )
+              : Resultado(
+                  nota: _nota,
+                  recomecar: _recomecar,
+                ))),
     );
   }
 }
