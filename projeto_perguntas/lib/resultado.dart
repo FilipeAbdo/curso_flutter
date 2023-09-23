@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_perguntas/questao.dart';
-import 'package:projeto_perguntas/resposta.dart';
 
 class Resultado extends StatelessWidget {
   final double nota;
