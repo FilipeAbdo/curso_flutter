@@ -13,43 +13,46 @@ class ExpensesApp extends StatelessWidget {
   const ExpensesApp({super.key});
   @override
   Widget build(BuildContext context) {
+    const primaryColor = Colors.purple;
     return MaterialApp(
-      home: HomePage(),
+      home: const HomePage(),
       theme: ThemeData(
-        colorSchemeSeed: Colors.green,
+        colorSchemeSeed: primaryColor,
         fontFamily: 'Quicksand',
         textTheme: const TextTheme(
-          titleLarge: TextStyle(
-            // fontFamily: 'OpenSans',
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-          titleSmall: TextStyle(
-            // fontFamily: 'OpenSans',
-            fontSize: 16,
-            fontWeight: FontWeight.normal,
-            color: Colors.grey,
-          ),
-          labelLarge: TextStyle(
-            // fontFamily: 'OpenSans',
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-          labelMedium: TextStyle(
-            // fontFamily: 'OpenSans',
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.purple,
-          ),
-        ),
+            titleLarge: TextStyle(
+              // fontFamily: 'OpenSans',
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+            titleSmall: TextStyle(
+              // fontFamily: 'OpenSans',
+              fontSize: 16,
+              fontWeight: FontWeight.normal,
+              color: Colors.grey,
+            ),
+            labelLarge: TextStyle(
+              // fontFamily: 'OpenSans',
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+            labelMedium: TextStyle(
+              // fontFamily: 'OpenSans',
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: primaryColor,
+            ),
+            labelSmall: TextStyle(
+              fontSize: 16,
+            )),
         iconTheme: const IconThemeData(color: Colors.white, size: 25),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: Colors.purple,
+          backgroundColor: primaryColor,
           iconSize: 35,
         ),
         appBarTheme: const AppBarTheme(
-          color: Colors.purple,
+          color: primaryColor,
           titleTextStyle: TextStyle(
             color: Colors.white,
             fontFamily: 'Quicksand',
@@ -66,65 +69,70 @@ class ExpensesApp extends StatelessWidget {
 }
 
 class HomePage extends StatefulWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final _transactions = [
+  final List<Transaction> _transactions = [
     Transaction(
-      id: "t7",
+      id: "t0",
       title: "Macbook Air",
       value: 15000.00,
-      date: DateTime(2023, 09, 23, 13, 29),
+      date: DateTime(2023, 09, 19, 13, 29),
     ),
     Transaction(
       id: "t1",
       title: "Transação 1",
-      value: 234.12,
-      date: DateTime(2023, 09, 23, 13, 29),
+      value: 34.12,
+      date: DateTime(2023, 09, 05, 13, 29),
     ),
     Transaction(
       id: "t2",
       title: "Transação 2",
       value: 234.12,
-      date: DateTime(2023, 09, 23, 13, 29),
+      date: DateTime(2023, 09, 21, 13, 29),
     ),
     Transaction(
       id: "t3",
       title: "Transação 3",
-      value: 234.12,
-      date: DateTime(2023, 09, 23, 13, 29),
+      value: 134.12,
+      date: DateTime(2023, 09, 21, 13, 29),
     ),
     Transaction(
       id: "t4",
       title: "Transação 4",
       value: 234.12,
-      date: DateTime(2023, 09, 23, 13, 29),
+      date: DateTime(2023, 09, 22, 13, 29),
     ),
     Transaction(
       id: "t5",
       title: "Transação 5",
-      value: 234.12,
+      value: 334.12,
       date: DateTime(2023, 09, 23, 13, 29),
     ),
     Transaction(
       id: "t6",
       title: "Transação 6",
       value: 234.12,
-      date: DateTime(2023, 09, 23, 13, 29),
+      date: DateTime(2023, 09, 24, 13, 29),
+    ),
+    Transaction(
+      id: "t7",
+      title: "Transação 7 asdjkhasjkdhajklsdh",
+      value: 2437129837109378.12,
+      date: DateTime(2023, 09, 20, 13, 29),
     ),
   ];
 
-  _addTransaction(String title, double value) {
-    print("$title:${value.toStringAsFixed(2)}");
+  _addTransaction(String title, double value, DateTime date) {
     final newTransaction = Transaction(
       id: Random().nextDouble().toString(),
       title: title,
       value: value,
-      date: DateTime.now(),
+      date: date,
     );
     setState(() {
       _transactions.add(newTransaction);
@@ -133,21 +141,50 @@ class _HomePageState extends State<HomePage> {
   }
 
   _removeTransaction(String id) {
-    for (Transaction transaction in _transactions) {
-      if (transaction.id.compareTo(id) == 0) {
-        setState(() {
-          _transactions.remove(transaction);
-        });
-      }
+    setState(() {
+      _transactions.removeWhere((element) => element.id == id);
+    });
+  }
+
+  _editTansaction(String id) {
+    final Transaction? tr =
+        _transactions.where((element) => element.id == id).firstOrNull;
+
+    if (tr != null) {
+      _openTransactionFormModal(context, tr);
     }
   }
 
-  _openTransactionFormModal(BuildContext context) {
+  _updateTransaction(Transaction? transaction) {
+    final Transaction? tr = _transactions
+        .where((element) => element.id == transaction?.id)
+        .firstOrNull;
+
+    if (tr != null) {
+      setState(() {
+        tr.title = transaction == null ? "" : transaction.title;
+        tr.value = transaction == null ? 0.0 : transaction.value;
+        tr.date = transaction == null ? DateTime.now() : transaction.date;
+      });
+    }
+    Navigator.of(context).pop();
+  }
+
+  _openTransactionFormModal(BuildContext context, [Transaction? transaction]) {
     showModalBottomSheet(
-        context: context,
-        builder: (_) {
-          return TransactionForm(_addTransaction);
-        });
+      context: context,
+      builder: (_) {
+        return TransactionForm(_addTransaction, _updateTransaction,
+            transaction: transaction);
+      },
+    );
+  }
+
+  List<Transaction> get _recentTransactions {
+    return _transactions.where((tr) {
+      return (tr.date
+          .isAfter(DateTime.now().subtract(const Duration(days: 7))));
+    }).toList();
   }
 
   @override
@@ -166,10 +203,11 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            const ExpensesChart(),
+            ExpensesChart(_recentTransactions),
             TransactionList(
               transactions: _transactions,
               onRemove: _removeTransaction,
+              onEdit: _editTansaction,
             ),
           ],
         ),
