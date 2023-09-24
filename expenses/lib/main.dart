@@ -18,7 +18,7 @@ class ExpensesApp extends StatelessWidget {
       home: const HomePage(),
       theme: ThemeData(
         colorSchemeSeed: primaryColor,
-        fontFamily: 'Quicksand',
+        // fontFamily: 'Roboto',
         textTheme: const TextTheme(
             titleLarge: TextStyle(
               // fontFamily: 'OpenSans',
@@ -76,6 +76,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool _showGraphic = true;
   final List<Transaction> _transactions = [
     Transaction(
       id: "t0",
@@ -180,6 +181,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  _toggleGraphic(bool value) {
+    setState(() {
+      _showGraphic = value;
+    });
+  }
+
   List<Transaction> get _recentTransactions {
     return _transactions.where((tr) {
       return (tr.date
@@ -189,26 +196,46 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Despesas Pesoais"),
-        actions: [
+    bool _isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    final appBar = AppBar(
+      title: const Text("Despesas Pesoais"),
+      actions: [
+        if (_isLandscape)
           IconButton(
-              onPressed: () => _openTransactionFormModal(context),
-              icon: const Icon(Icons.add)),
-        ],
-        // backgroundColor: Colors.purple,
-      ),
+            onPressed: () => _toggleGraphic(!_showGraphic),
+            icon: Icon(_showGraphic ? Icons.list : Icons.bar_chart),
+          ),
+        IconButton(
+          onPressed: () => _openTransactionFormModal(context),
+          icon: const Icon(Icons.add),
+        ),
+      ],
+      // backgroundColor: Colors.purple,
+    );
+    final availableHight = MediaQuery.of(context).size.height -
+        appBar.preferredSize.height -
+        MediaQuery.of(context).padding.top;
+    return Scaffold(
+      appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            ExpensesChart(_recentTransactions),
-            TransactionList(
-              transactions: _transactions,
-              onRemove: _removeTransaction,
-              onEdit: _editTansaction,
-            ),
+            if (_showGraphic || !_isLandscape)
+              SizedBox(
+                height: availableHight * (0.25 + (_isLandscape ? 0.55 : 0.0)),
+                child: ExpensesChart(_recentTransactions),
+              ),
+            if (!_showGraphic || !_isLandscape)
+              SizedBox(
+                height: availableHight * (0.75 + (_isLandscape ? 0.25 : 0.0)),
+                child: TransactionList(
+                  transactions: _transactions,
+                  onRemove: _removeTransaction,
+                  onEdit: _editTansaction,
+                ),
+              ),
           ],
         ),
       ),

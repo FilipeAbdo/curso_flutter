@@ -29,8 +29,9 @@ class _TransactionFormState extends State<TransactionForm> {
           ? ""
           : DateFormat("dd MMM yyyy").format(DateTime.now());
       pickedDate = transaction?.date;
-    }else{
-        dateController.text = DateFormat("dd MMM yyyy").format(pickedDate ?? DateTime.now());
+    } else {
+      dateController.text =
+          DateFormat("dd MMM yyyy").format(pickedDate ?? DateTime.now());
     }
   }
 
@@ -74,53 +75,60 @@ class _TransactionFormState extends State<TransactionForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            TextField(
-              //   cursorColor: Colors.purple,
-              controller: titleController,
-              onSubmitted: (_) => _onSubmited(),
-              decoration: const InputDecoration(
-                labelText: "Titulo",
-                // labelStyle: TextStyle(color: Colors.purple),
-                // focusedBorder: UnderlineInputBorder(
-                //     borderSide: BorderSide(color: Colors.purpleAccent)),
-              ),
-            ),
-            TextField(
-              controller: valueController,
-              onSubmitted: (_) => _onSubmited(),
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              //   cursorColor: Colors.purple,
-              decoration: const InputDecoration(
-                labelText: "Valor R\$",
-                // labelStyle: TextStyle(color: Colors.purple),
-                // focusedBorder: UnderlineInputBorder(
-                //     borderSide: BorderSide(color: Colors.purpleAccent)),
-              ),
-            ),
-            TextField(
-              controller: dateController,
-              onSubmitted: (_) => _onSubmited(),
-              onTap: () => _showDatePicker(),
-              decoration: const InputDecoration(label: Text("Date")),
-            ),
-            Container(
-              alignment: Alignment.centerRight,
-              margin: const EdgeInsets.only(top: 8),
-              child: ElevatedButton(
-                onPressed: _onSubmited,
-                child: const Text(
-                  "Confirmar",
+    return SingleChildScrollView(
+      child: Card(
+        elevation: 5,
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: 10,
+            left: 10,
+            right: 10,
+            bottom: 10 + MediaQuery.of(context).viewInsets.bottom
+          ),
+          child: Column(
+            children: [
+              TextField(
+                //   cursorColor: Colors.purple,
+                controller: titleController,
+                onSubmitted: (_) => _onSubmited(),
+                decoration: const InputDecoration(
+                  labelText: "Titulo",
+                  // labelStyle: TextStyle(color: Colors.purple),
+                  // focusedBorder: UnderlineInputBorder(
+                  //     borderSide: BorderSide(color: Colors.purpleAccent)),
                 ),
               ),
-            ),
-          ],
+              TextField(
+                controller: valueController,
+                onSubmitted: (_) => _onSubmited(),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                //   cursorColor: Colors.purple,
+                decoration: const InputDecoration(
+                  labelText: "Valor R\$",
+                  // labelStyle: TextStyle(color: Colors.purple),
+                  // focusedBorder: UnderlineInputBorder(
+                  //     borderSide: BorderSide(color: Colors.purpleAccent)),
+                ),
+              ),
+              TextField(
+                controller: dateController,
+                onSubmitted: (_) => _onSubmited(),
+                onTap: () => _showDatePicker(),
+                decoration: const InputDecoration(label: Text("Date")),
+              ),
+              Container(
+                alignment: Alignment.centerRight,
+                margin: const EdgeInsets.only(top: 8),
+                child: ElevatedButton(
+                  onPressed: _onSubmited,
+                  child: const Text(
+                    "Confirmar",
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

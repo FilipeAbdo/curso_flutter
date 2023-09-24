@@ -22,13 +22,9 @@ class TransactionList extends StatelessWidget {
     _onEdit(String id){
         onEdit(id);
     }
-    return SizedBox(
-      height: 470,
-      width: double.infinity,
-      child: (transactions.isNotEmpty)
-          ? TransactionListView(transactions, _onDelete, _onEdit)
-          : const WaitingScreen(),
-    );
+    return (transactions.isNotEmpty)
+        ? TransactionListView(transactions, _onDelete, _onEdit)
+        : const WaitingScreen();
   }
 }
 
@@ -187,26 +183,33 @@ class WaitingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(
-          height: 20,
-        ),
-        Text(
-          "Nenhuma transação cadastrada",
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        SizedBox(
-          height: 200,
-          child: Image.asset(
-            'assets\\images\\waiting.png',
-            fit: BoxFit.cover,
-          ),
-        ),
-      ],
+    return LayoutBuilder(
+      builder: (ctx, constraints) {
+        return Column(
+          children: [
+            const SizedBox(
+              height: 20,
+            ),
+            Container(
+                height: constraints.maxHeight * 0.15,
+              child: Text(
+                "Nenhuma transação cadastrada",
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            SizedBox(
+              height: constraints.maxHeight *0.6,
+              child: Image.asset(
+                'assets\\images\\waiting.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ],
+        );
+      }
     );
   }
 }
